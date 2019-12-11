@@ -1,8 +1,9 @@
 const userDb = require("../users/userDb")
+const postDb = require("../posts/postDb")
 
 function validateUserId(req, res, next) {
     return (req, res, next) => {
-        userDb.findById(req.params.id)
+        userDb.getById(req.params.id)
             .then(user => {
                 if (user) {
                     req.user = user
@@ -13,7 +14,7 @@ function validateUserId(req, res, next) {
             })
             .catch(err => {
                 console.log(err)
-                res.status(500).json({ message: "Could not retrieve user" })
+                res.status(500).json({ message: "Internal Server Error" })
             })
     }
   }
@@ -29,6 +30,10 @@ function validateUserId(req, res, next) {
         next();
     }
   }
+
+  function validatePostId(req, res, next) {
+    // do your magic!
+  }
   
   function validatePost(req, res, next) {
     return (req, res, next) => {
@@ -38,6 +43,7 @@ function validateUserId(req, res, next) {
         if(!req.body.text) {
             return res.status(400).json({ message: "Missing required text field" })
         }
+        next();
     }
   }
 

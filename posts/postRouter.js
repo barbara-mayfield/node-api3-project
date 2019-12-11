@@ -1,4 +1,5 @@
-const express = require('express');
+const express = require("express");
+const { validatePost, validatePostId} = require("../middleware/validate")
 
 const router = express.Router();
 
@@ -17,11 +18,5 @@ router.delete('/:id', (req, res) => {
 router.put('/:id', (req, res) => {
   // do your magic!
 });
-
-// custom middleware
-
-function validatePostId(req, res, next) {
-  // do your magic!
-}
 
 module.exports = router;

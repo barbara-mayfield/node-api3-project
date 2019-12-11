@@ -1,19 +1,17 @@
 const express = require("express")
 const helmet = require("helmet")
 const logger = require("./middleware/logger")
-const landingRouter = require("./routers/landing")
+const serverRouter = require("./server")
 const userRouter = require("./users/userRouter")
-const postRouter = require("./posts/postRouter")
 
 const server = express()
 
 server.use(helmet())
-server.use(logger())
+server.use(logger)
 server.use(express.json())
 
-server.use("/", landingRouter)
-server.use("/api/user", userRouter)
-server.use("/api/user/:id", postRouter)
+server.use("/", serverRouter)
+server.use("/api/users", userRouter)
 
 server.use((req, res) => {
     res.status(404).json({ message: "Route was not found" })

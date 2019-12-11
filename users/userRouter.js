@@ -1,22 +1,12 @@
 const express = require('express');
-const users = require("../data/seeds/02-users")
 const { validateUser, validateUserId }  = require("../middleware/validate")
+const postRouter = require("../posts/postRouter")
+const users = require("../data/seeds/02-users")
+const userDb = require("./userDb")
+
 const router = express.Router();
 
-router.post("/", (req, res) => {
-  users.add(req.body)
-      .then(user => {
-          res.status(201).json(user)
-      })
-      .catch(err => {
-          console.log(err)
-          next(err)
-      })
-})
-
-router.post('/:id/posts', (req, res) => {
-  // do your magic!
-});
+router.use("/:id/posts", postRouter)
 
 router.get("/", (req, res) => {
   const opts = {
@@ -25,15 +15,17 @@ router.get("/", (req, res) => {
       sortdir: req.query.sortdir,
   }
 
-  try {
-      users.find(opts)
-  } catch(err) {
-      next(err)
-  }
+  userDb.get(res.body)
+    .then(user => {
+      res.status(200).json(user)
+    })
+    .catch(err => {
+      next(err);
+    })
 })
 
 router.get("/:id", validateUserId(), (req, res) => {
-  users.getById(req.params.id)
+  userDb.getById(req.params.id)
       .then(user => {
           if(user){
               res.status(200).json(user)
@@ -47,22 +39,27 @@ router.get("/:id", validateUserId(), (req, res) => {
       })
 })
 
-router.get('/:id/posts', validateUserId(), (req, res) => {
+router.get('/:id/posts', (req, res) => {
   // do your magic!
 });
 
-router.delete("/:id", validateUserId(), (req, res) => {
-  users.remove(req.params.id)
-      .then(count => {
-          res.status(200).json({ message: "The user has been deleted." })
+router.post("/", validateUser(), validateUserId(), (req, res) => {
+  userDb.insert(req.body)
+      .then(user => {
+          res.status(201).json(user)
       })
       .catch(err => {
+          console.log(err)
           next(err)
       })
 })
 
-router.put(":/id", validateUserId(), (req, res) => {
-  users.update(req.params.id, req.body)
+router.post('/:id/posts', (req, res) => {
+  // do your magic!
+});
+
+router.put("/:id", validateUser(), validateUserId(), (req, res) => {
+  userDb.update(req.params.id, req.body)
   .then(user => {
       res.status(200).json(user)
   })
@@ -70,6 +67,16 @@ router.put(":/id", validateUserId(), (req, res) => {
       console.log(err)
       next(err)
   })
+})
+
+router.delete("/:id", validateUserId(), (req, res) => {
+  userDb.remove(req.params.id)
+      .then(res => {
+          res.status(200).json({ message: "The user has been deleted." })
+      })
+      .catch(err => {
+          next(err)
+      })
 })
 
 module.exports = router;
