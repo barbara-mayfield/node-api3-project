@@ -16,7 +16,27 @@ router.get('/', validatePostId(), (req, res) => {
   })
 });
 
-router.delete('/:postId', validatePostId(), (req, res) => {
+router.post('/:id', validatePostId(), validatePost(), (req, res) => {
+  postDb.insert(req.body)
+    .then(post => {
+      res.status(201).json(post)
+    })
+    .catch(error => {
+      next(error)
+    })
+})
+
+router.put('/:id', validatePost(), validatePostId(), (req, res) => {
+  postDb.update(req.post.id, req.body)
+    .then(post => {
+        res.status(200).json(post)
+    })
+    .catch(error => {
+      next(error)
+    })
+});
+
+router.delete('/post/:postId', validatePostId(), (req, res) => {
   postDb.remove(req.post.id)
     .then(count => {
         res.status(200).json({ message: "The post was deleted" })
@@ -24,10 +44,6 @@ router.delete('/:postId', validatePostId(), (req, res) => {
     .catch(error => {
       next(error)
     })
-});
-
-router.put('/:postId', validatePost(), validatePostId(), (req, res) => {
-  // do your magic!
 });
 
 module.exports = router;
