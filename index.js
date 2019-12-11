@@ -21,6 +21,6 @@ server.use((err, req, res, next) => {
     res.status(500).json({ message: "An internal error occured, please try again later"})
 })
 
-server.listen(8080, () => {
-    console.log("\n*** Server runnning on http://localhost:8080 ***\n")
+server.listen(8081, () => {
+    console.log("\n*** Server runnning on http://localhost:8081 ***\n")
 })

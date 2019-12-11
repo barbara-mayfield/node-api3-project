@@ -43,15 +43,15 @@ router.get('/:id/posts', (req, res) => {
   // do your magic!
 });
 
-router.post("/", validateUser(), validateUserId(), (req, res) => {
+router.post("/", validateUser(), (req, res) => {
   userDb.insert(req.body)
-      .then(user => {
-          res.status(201).json(user)
-      })
-      .catch(err => {
-          console.log(err)
-          next(err)
-      })
+        .then(user => {
+            res.status(201).json(user)
+        })
+        .catch(err => {
+            console.log(error)
+            res.status(500).json({ error: "There was an error while saving the user to the database" })
+        })
 })
 
 router.post('/:id/posts', (req, res) => {
@@ -59,7 +59,7 @@ router.post('/:id/posts', (req, res) => {
 });
 
 router.put("/:id", validateUser(), validateUserId(), (req, res) => {
-  userDb.update(req.params.id, req.body)
+  userDb.update(req.user.id, req.body)
   .then(user => {
       res.status(200).json(user)
   })
