@@ -33,7 +33,7 @@ router.get("/", (req, res) => {
 })
 
 router.get("/:id", validateUserId(), (req, res) => {
-  users.findById(req.params.id)
+  users.getById(req.params.id)
       .then(user => {
           if(user){
               res.status(200).json(user)

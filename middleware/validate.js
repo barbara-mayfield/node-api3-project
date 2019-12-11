@@ -8,12 +8,12 @@ function validateUserId(req, res, next) {
                     req.user = user
                     next()
                 } else {
-                    res.status(404).json({ message: "User not found" })
+                    res.status(400).json({ message: "Invalid user ID" })
                 }
             })
             .catch(err => {
                 console.log(err)
-                res.status(500).json({ message: "Invalid user ID" })
+                res.status(500).json({ message: "Could not retrieve user" })
             })
     }
   }
@@ -31,7 +31,14 @@ function validateUserId(req, res, next) {
   }
   
   function validatePost(req, res, next) {
-    // do your magic!
+    return (req, res, next) => {
+        if(!req.body) {
+            return res.status(400).json({ message: "Missing post data"})
+        }
+        if(!req.body.text) {
+            return res.status(400).json({ message: "Missing required text field" })
+        }
+    }
   }
 
 module.exports = {
