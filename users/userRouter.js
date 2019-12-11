@@ -1,20 +1,14 @@
 const express = require('express');
-const { validateUser, validateUserId }  = require("../middleware/validate")
+const { validateUser, validatePost, validateUserId }  = require("../middleware/validate")
 const postRouter = require("../posts/postRouter")
-const users = require("../data/seeds/02-users")
 const userDb = require("./userDb")
+const postDb = require("../posts/postDb")
 
 const router = express.Router();
 
 router.use("/:id/posts", postRouter)
 
 router.get("/", (req, res) => {
-  const opts = {
-      limit: req.query.limit,
-      sortby: req.query.sortby,
-      sortdir: req.query.sortdir,
-  }
-
   userDb.get(res.body)
     .then(user => {
       res.status(200).json(user)
@@ -39,8 +33,14 @@ router.get("/:id", validateUserId(), (req, res) => {
       })
 })
 
-router.get('/:id/posts', (req, res) => {
-  // do your magic!
+router.get('/:id/post', validateUserId(), (req, res) => {
+  userDb.getUserPosts(req.user.id)
+    .then(post => {
+      res.status(200).json(post)
+    })
+    .catch(err => {
+      next(err)
+    })
 });
 
 router.post("/", validateUser(), (req, res) => {
@@ -54,8 +54,19 @@ router.post("/", validateUser(), (req, res) => {
         })
 })
 
-router.post('/:id/posts', (req, res) => {
-  // do your magic!
+router.post('/:id/posts', validateUserId(), validatePost(), (req, res) => {
+  const newPost = {
+    user_id: req.params.id,
+    text: req.body.text
+  }
+
+  postDb.insert(newPost)
+    .then(newPost => {
+      res.status(200).json(newPost)
+    })
+    .catch(error => {
+      res.status(500).json({ message: "Could not post" })
+    })
 });
 
 router.put("/:id", validateUser(), validateUserId(), (req, res) => {
@@ -70,13 +81,13 @@ router.put("/:id", validateUser(), validateUserId(), (req, res) => {
 })
 
 router.delete("/:id", validateUserId(), (req, res) => {
-  userDb.remove(req.params.id)
-      .then(res => {
-          res.status(200).json({ message: "The user has been deleted." })
-      })
-      .catch(err => {
-          next(err)
-      })
+  userDb.remove(req.user.id)
+    .then(count => {
+        res.status(200).json({ message: "The user was deleted" })
+    })
+    .catch(error => {
+      next(error)
+    })
 })
 
 module.exports = router;

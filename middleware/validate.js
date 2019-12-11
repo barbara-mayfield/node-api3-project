@@ -32,7 +32,21 @@ function validateUserId(req, res, next) {
   }
 
   function validatePostId(req, res, next) {
-    // do your magic!
+    return (req, res, next) => {
+        postDb.getById(req.params.id)
+            .then(post => {
+                if (post) {
+                    req.post = post
+                    next()
+                } else {
+                    res.status(400).json({ message: "Invalid post ID" })
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                res.status(500).json({ message: "Internal Server Error" })
+            })
+    }
   }
   
   function validatePost(req, res, next) {
@@ -50,5 +64,6 @@ function validateUserId(req, res, next) {
 module.exports = {
     validateUserId,
     validateUser,
+    validatePostId,
     validatePost
 }
