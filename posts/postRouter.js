@@ -36,7 +36,7 @@ router.put('/:id', validatePost(), validatePostId(), (req, res) => {
     })
 });
 
-router.delete('/post/:postId', validatePostId(), (req, res) => {
+router.delete('/:id', validatePostId(), (req, res) => {
   postDb.remove(req.post.id)
     .then(count => {
         res.status(200).json({ message: "The post was deleted" })

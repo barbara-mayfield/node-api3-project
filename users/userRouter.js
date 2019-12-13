@@ -33,7 +33,7 @@ router.get("/:id", validateUserId(), (req, res) => {
       })
 })
 
-router.get('/:id/post', validateUserId(), (req, res) => {
+router.get('/posts/:id', validateUserId(), (req, res) => {
   userDb.getUserPosts(req.user.id)
     .then(post => {
       res.status(200).json(post)
@@ -65,7 +65,7 @@ router.post('/:id/posts', validateUserId(), validatePost(), (req, res) => {
       res.status(200).json(newPost)
     })
     .catch(error => {
-      res.status(500).json({ message: "Could not post" })
+      next()
     })
 });
 
